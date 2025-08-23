@@ -9,11 +9,11 @@ GLB_FILE="./output/model.glb"
 
 mkdir -p $SPARSE_DIR $DENSE_DIR ./output
 
-echo "🚀 Starting COLMAP reconstruction..."
+echo "🚀 Starting COLMAP reconstruction (CPU mode)..."
 
-# Sparse + dense reconstruction
-colmap feature_extractor --database_path $DENSE_DIR/database.db --image_path $IMAGE_DIR
-colmap exhaustive_matcher --database_path $DENSE_DIR/database.db
+# Sparse + dense reconstruction in CPU mode
+colmap feature_extractor --database_path $DENSE_DIR/database.db --image_path $IMAGE_DIR --SiftExtraction.use_gpu 0
+colmap exhaustive_matcher --database_path $DENSE_DIR/database.db --SiftMatching.use_gpu 0
 colmap mapper --database_path $DENSE_DIR/database.db --image_path $IMAGE_DIR --output_path $SPARSE_DIR
 colmap image_undistorter --image_path $IMAGE_DIR --input_path $SPARSE_DIR/0 --output_path $DENSE_DIR --output_type COLMAP
 colmap patch_match_stereo --workspace_path $DENSE_DIR --PatchMatchStereo.geom_consistency true
