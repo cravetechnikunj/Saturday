@@ -1,20 +1,16 @@
-FROM ubuntu:22.04
+# ✅ Use official COLMAP prebuilt image (no compilation needed)
+FROM colmap/colmap:latest
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    git cmake build-essential libboost-all-dev libglew-dev qtbase5-dev libcgal-dev \
-    freeglut3-dev python3 python3-pip blender nodejs npm wget
+# Install Blender + Node.js for GLB export + server
+RUN apt-get update && apt-get install -y blender nodejs npm python3 python3-pip
 
-# Install COLMAP
-RUN git clone https://github.com/colmap/colmap.git /opt/colmap && \
-    cd /opt/colmap && mkdir build && cd build && \
-    cmake .. && make -j$(nproc) && make install
-
-# Set working directory
 WORKDIR /app
 
 # Copy repo content
 COPY . /app
 
-# Install node dependencies
+# Install Node.js deps
 RUN npm install express
+
+# Run pipeline + start server
+CMD bash run_colmap.sh && node server.js
